@@ -1,0 +1,101 @@
+---
+title: "R Analisis Numerico Eddy Herrera Daza"
+output:
+  html_notebook: default
+  pdf_document: default
+---
+##Ejercicios
+```{r}
+library(pracma)
+library(Matrix)
+```
+```{r}
+setwd("C:/Users/auditorio/Documents/analisis_numerico/parciales/parcial1")
+```
+
+1. Para el siguiente ejercico, instale el paquete "pracma" 
+a. Revise las siguientes funciones con la matriz del ejercicio 2
+b. Evalue la matriz de transicion para el metodo $\textbf{SOR}$
+```{r,echo=T}
+D1<-eye(n, m = n)
+D2<-ones(n, m = n)
+D3<-zeros(n, m = n)
+```
+2. Dada la siguiente matriz, utilice las funciones del paquete para descomponer la matriz $A=L+D+U$ (Jacobi)
+```{r, echo=FALSE}
+A = matrix(c(-8.1, -7, 6.123, -2, -1, 4,
+-3, -1, 0, -1, -5, 0.6,
+-1, 0.33, 6, 1/2), nrow=4, byrow=TRUE)
+A
+```
+b. Utilice la funcion itersolve(A, b, tol , method = "Gauss-Seidel") y solucionar el sistema asociado a la matriz $A$ con $b=[1.45,3,5.12,-4]^{t}$ con una tolerancia de $1e^-9$
+c. Genere 5 iteraciones del metodo de Jacobi, calcular error relativo para cada iteracion
+
+3. Sea el sistema $AX=b$ 
+ a. Implemente una funcion en R para que evalue las raices del polinomio caracteristico asociado a la matriz $A$
+ b. Use el teorema de convergencia para determinar cual metodo iterativo es mas favorable.
+ c. Evalue la matriz de transicion para cada caso y en el caso del metodo de relajacion determine el valor optimo de $\omega$
+ d. Teniendo en cuenta lo anterio resolver el sistema
+
+```{r, echo=T}
+A = matrix(c(4, -1, -1, -1, -1, 4,
+-1, -1, -1, -1, 4, -1,
+-1, -1, -1, 4), nrow=4, byrow=TRUE)
+A
+b = c(1, 5, 1.5,-2.33)
+b
+```
+d Comparar con la solucion por defecto
+```{r,echo=T}
+solucion<- solve(A,b)
+
+```
+3. 
+a. Pruebe el siguiente algoritmo con una matriz $A_{3}$, modifiquelo para quue $a_{ii}=0$ para todo $i$
+```{r, echo=T}
+tril1 <- function(M, k = 0) {
+if (k == 0) {
+M[upper.tri(M, diag = FALSE)] <- 0
+} else {
+M[col(M) >= row(M) + k + 1] <- 0
+}
+return(M)
+}
+```
+b. Implemente una funcion en R para que dada una matriz $A$ se obtenga una matriz diagonal $D$ donde en la diagonal estan los mismo elementos de A
+
+4. Cree una funcion que cuente el numero de multiplicaciones en el metodo directo de Gauss Jordan, para resolver un sistema de $n$ ecuaciones y pruebelo para $n=5$
+
+5. Dado el siguiente sistema:
+
+    $2x-z=1$                                                                                
+    $\beta$x+2y-z=2                                                                         
+    $-x+y+$\alpha$z=1$
+
+a. Encuentre el valor de $\alpha$ y $\beta$ para asegura la convergencia por el metodo de Jacobi
+b. Genere una tabla que tenga 10 iteraciones del metodo de Jacobi con vector inicial $x_{0}=[1,2,3]^t$
+c. Grafique cada ecuacion y la solucion
+
+6. Instalar el paquete Matrix y descomponga la matriz $A$ (del punto dos) de la forma $LU$ y la factorizarla como $A=QR$
+
+7.
+a. Determinar numericamente la interseccion entre la circunferencia $x^2 + y^2 = 1$ y la recta $y = x$. Usamos una aproximacion inicial $(1,1)$. Utilice el pauqte BB y  la funcion BBsolve() del paquete,grafique la solucion
+b Analizar y comentar el siguinte codigo
+```{r, echo=T}
+trigexp = function(x) {
+n = length(x)
+F = rep(NA, n)
+F[1] = 3*x[1]^2 + 2*x[2] - 5 + sin(x[1] - x[2]) * sin(x[1] + x[2])
+tn1 = 2:(n-1)
+F[tn1] = -x[tn1-1] * exp(x[tn1-1] - x[tn1]) + x[tn1] *
+( 4 + 3*x[tn1]^2) + 2 * x[tn1 + 1] + sin(x[tn1] -
+x[tn1 + 1]) * sin(x[tn1] + x[tn1 + 1]) - 8
+F[n] = -x[n-1] * exp(x[n-1] - x[n]) + 4*x[n] - 3
+F
+}
+n = 10000
+p0 = runif(n) # n initial random starting guesses
+sol = BBsolve(par=p0, fn=trigexp)
+sol$par
+```
+8. Demuestre y realice varias pruebas que la matriz de transicion por el metodo de Gauss-Seidel esta dada por $T=(-D^{-1}U)(I+LD^{-1})^{-1}$
