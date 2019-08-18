@@ -1,45 +1,73 @@
 library(pracma)
 library(Matrix)
 
-while((1/rcond(A)) < 1000){
-  A = matrix(sample(10:15,36,replace=T), nrow=6, byrow=TRUE)
-  b = c(1, 2, 3, 4, 5, 6)
+#---------------------Punto 1 extra ----------------------
+
+#Punto 1 
+n = 6
+rrr =sample(0:20, 36, replace = TRUE)
+A = matrix( rrr, nrow=6, byrow=TRUE)
+condicional = 0
+while(condicional< 1000 )
+{
+  A = matrix( sample(10:20, 36, replace = TRUE), nrow=n, byrow=TRUE)
+  condicional = cond(A)
 }
+print("A")
 print(A)
-print(1/rcond(A))
 
-#Funcion para la diagonal
-diag1 <- function(M) {
-  M[col(M)!=row(M)] <- 0
-  return(M)
-}
+condicional = (cond(A))
+print(condicional)
+b = matrix( c(1,2,3,4,5,6), nrow = 1, byrow=TRUE)
+print("b")
+print(b)
 
-if((1/rcond(A)) > 1000){
-  #Matriz transicion metodo de Jacobi
-  L = tril(A,k=-1,diag = FALSE)
-  U = triu(A,k=1,diag = FALSE)
-  L[lower.tri(L,diag=TRUE)] <- 0
-  U[upper.tri(U, diag = TRUE)] <- 0
-  D = diag(diag(A))
-  I=diag(1,nrow = nrow(A)) # Matriz diagonal de dimension 6
-  D1 <- solve(D,I) # Matriz inversa de A
+if(condicional > 1000)
+{
+  print(condicional)  
+  diagonal <- function(M) 
+  {
+    M[col(M)!=row(M)] <- 0
+    return(M)
+  }
+  
+  #T = -D^-1(L + U)
+  D = diagonal(A)
+  L = tril(A,k=-1)
+  U = triu(A,k=1)
+  
+  T = (-solve(D))%*%(L+U)
+  print("Matriz de transición")
+  print(T)
+  print("Norma")
+  norma <- norm(T,"F")
+  print(norma)
+  print("Radio espectral de la matriz")
+  
+  radioExp <- max(abs(eig(A)))
+  print( radioExp)
+  
+  # Matriz diagonal de dimension 3
+  I=diag(1,nrow = nrow(A))
+  # Matriz inversa de A
+  D1 <- solve(D,I)
   T1 = D1 %*% U
   T2 = (I + (L %*% D1))
-  T2<- solve(T2,I) # Matriz inversa de A
+  # Matriz inversa de A
+  T2<- solve(T2,I)
+  
+  #Analisi de convergencia
   MatTG = T1+T2
   normaG = norm(MatTG, type = c( "I"))
-  print("Matriz de transicion de Gauss")
+  print("Norma/convergencia de Gauss")
+  print(normaG)
+  print("Matriz de trancision de Gauss")
   print(MatTG)
-  print("Norma de la matriz por Gauss")
-  print(normaG)
-  print("Convergencia Gauss")
-  print(normaG)
+  
   MatTJ = (-D1)%*%(L+U)
   normaJ = norm(MatTJ, type = c("I"))
-  print("Matriz de transicion de Jacobi")
+  print("Norma/convergencia de Jacobi")
+  print(normaJ)
+  print("Matriz de trancision de Jacobi")
   print(MatTJ)
-  print("Norma de la matriz por Jacobi")
-  print(normaJ)
-  print("Convergencia Jacobi")
-  print(normaJ)
 }
