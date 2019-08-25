@@ -59,3 +59,34 @@ print("Norma/convergencia de Jacobi")
 print(normaJ)
 print("Matriz de trancision de Jacobi")
 print(MatTJ)
+
+library(BB)
+library(psych)
+A = matrix(c(8, 9, 2, 2, 7, 2,
+             2, 8, 6), nrow=3, byrow=TRUE)
+
+b= matrix(c(69,47,68), nrow=3, byrow=TRUE)
+Ab = cbind(A,b)
+Ab
+
+#Matriz de Transicion Jacobi 
+#L es una matriz triangular inferior con la diagonal en 0
+L=A
+L[lower.tri(L,diag=TRUE)] <- 0
+#U es una matriz triangular superior con la diagonal en 0
+U  = A
+U[lower.tri(U,diag=TRUE)] <- 0
+#S es una matriz triangular superior
+S  = A
+S[lower.tri(S,diag=FALSE)] <- 0
+InvDiag <- solve(diag(diag(Ab)))
+TJacobi = (-InvDiag)%*%(L+U)
+TJacobi 
+#Matriz de Transicion de Gauss Sidel
+I=diag(1,nrow = nrow(A)) 
+TGauss = -solve(I+InvDiag%*%L)%*%(InvDiag%*%S)
+TGauss
+#Matriz de Transicion de Relajacion
+omegaM=0.5
+Trelajacion= solve(I+omegaM*solve(InvDiag))%*%(I-omegaM*solve(InvDiag)*S)
+Trelajacion
