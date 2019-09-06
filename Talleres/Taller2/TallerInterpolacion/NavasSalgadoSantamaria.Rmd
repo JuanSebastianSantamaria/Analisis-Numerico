@@ -1,0 +1,159 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+1) Dados  los n+1  puntos  distintos  (xi,yi) el  polinomio  interpolante  que  incluye  a  todos  los puntos es único.
+
+Sean x1, . . ., xn algunos números diferentes por pares y sean y1, . . ., yn algunos números.
+Entonces existe un único polinomio P de grado ≤ n − 1 tal que:
+𝑃(𝑥𝑗) = 𝑦𝑗 𝑝𝑎𝑟𝑎 𝑐𝑎𝑑𝑎 𝑗 𝑒𝑛 {1, . . . , 𝑛}.
+Demostración:
+Denotemos por c0, . . ., cn−1 a los coeficientes del polinomio:
+𝑃(𝑥) = 𝑐0 + 𝑐1𝑥 + 𝑐2𝑥0
+2 + . . . + 𝑐𝑛 − 1𝑥 𝑛 − 1 .
+Sustituyendo x = x1, luego x = x2, etc., hasta x = xn, obtenemos el siguiente sistema de ecuaciones
+lineales para las incógnitas
+𝑐0 + 𝑥1𝑐1 + 𝑥 2 1 𝑐2 + . . . + 𝑥 𝑛 − 1 1 𝑐𝑛 − 1 = 𝑦1
+𝑐0 + 𝑥𝑛𝑐1 + 𝑥 2 𝑛 𝑐2 + . . . + 𝑥 𝑛 − 1 𝑛 𝑐𝑛 − 1 = 𝑦𝑛.
+La matriz de este sistema es la matriz de Vandermonde asociada a los puntos x1, . . ., xn, y el
+sistema se escribe brevemente en la forma
+𝑉 (𝑥1, . . . , 𝑥𝑛)𝑐 = 𝑦,
+donde c = ck−1 n k=1 es el vector de los coeficientes incognitos.
+El determinante de este sistema es el determinante de Vandermonde y se calcula como el
+producto de todas las diferencias xj − xi con i < j:
+𝑑𝑒𝑡 𝑉(𝑥1, . . . , 𝑥𝑛) = ∏ (xk − xj).
+j,k∈{1,...,n} j<k
+Como los puntos x1, . . ., xn son diferentes por pares, todas estas diferencias xk − xj son distintas
+de cero, y el determinante es distinto de cero. Por lo tanto, el sistema de ecuaciones lineales tiene
+una solución única, esto es, existe un único polinomio que cumple con dichas propiedades.
+
+
+2) Utilice la interpolación spline cúbico para el problema del perrito.
+
+```{r}
+aciertos <- function(spline,x_original, y_original){
+  cont = 0
+  n = length(x_original)
+  for (i in 1:n){
+    res = round ( spline(x_original[i]), digits = 3)
+    cat(res, " ", y_original[i],"\n")
+    if(res == y_original[i])
+    {
+      cont = cont+1
+    }
+  }
+  cat(cont ," de ", n, "\n")
+}
+
+t <- proc.time() # Inicia el cronómetro
+# CODIGO
+x=c(1,2,6,9,14,17.6)     
+x1=c(17.6,20,23,24.5,26.5,28.7,29.1)
+x2=c(28.4,29,29.275)
+y=c(3,3.7,4.5,7.12,6.7,4.45)
+y1=c(4.45,7,6.5,5.6,5.87,4.8,3.71)
+y2=c(5.1,4.1,3)
+
+a=c(1, 5.39, 8.62)
+a1=c(7.9,8.1,8.62)
+a2=c(7.9,9,11.5,13.76,16.95,20.22,23.5,26.83,28.45,29.1)
+ay=c(3,2.5,3.16)
+ay1=c(2.03,2.6,3.16)
+ay2=c(2.03,1.9,2.15,1.85,1.85,1.8,1.55,1.54,2.35,3.71)
+
+plot(x, y, xlim=c(1,30), ylim=c(2, 20))
+lines(spline(x, y, n = 20), col = 2)
+par(new = TRUE)
+plot(x1, y1, xlim=c(1,30), ylim=c(2, 20))
+lines(spline(x1, y1, n = 20), col = 2)
+par(new = TRUE)
+plot(a, ay, xlim=c(1,30), ylim=c(2, 20))
+lines(spline(a, ay, n = 20), col = 2)
+par(new = TRUE)
+plot(a1, ay1, xlim=c(1,30), ylim=c(2, 20))
+lines(spline(a1, ay1, n = 20), col = 2)
+par(new = TRUE)
+plot(a2, ay2, xlim=c(1,30), ylim=c(2, 20))
+lines(spline(a2, ay2, n = 20), col = 2)
+
+proc.time()-t
+```
+
+3) Sea $f(x)=e^x$ en el intervalo de [0,1] utilice el método de lagrange y determine el tamaño de paso que me produzca un error por debajo de $10^{-5}$. Es posible usar el polinomio de taylor para este caso?. Verifique su respuesta.
+
+Se encontró que el tamaño de paso que produce un error menor a $10^{-5}$ es 0.25, a continuación se presenta el código.
+```{r}
+f <- function( x ) { exp(x) }
+
+lagrange = function(x,y,a){ 
+  n = length(x) 
+  if(a < min(x) || max(x) < a) stop("No está interpolando")
+  X = matrix(rep(x, times=n), n, n, byrow=T)
+  mN = a - X; diag(mN) = 1
+  mD = X - t(X); diag(mD) = 1
+  Lnk = apply(mN, 1, prod)/apply(mD, 2, prod)
+  sum(y*Lnk)
+}
+
+#x<-c(0,0.2,0.4,0.6,0.8,1)
+x<-c(0,0.25,0.5,0.75,1)
+y<-f(x[1:5])
+lagrange(x[1:5],y[1:5],0.5)
+
+
+#Es posible usar el polinomio de taylor para este caso?
+require(pracma)
+
+f = function(x) exp(x)
+g= function (x) 1/x
+p = taylor(f, 0, 4) # Polinomio de Taylor de orden 4, alrededor dex0=0.
+pa= taylor(g, 5, 4) # esta funcion no se puede aproximar en x0=0 debido a que al evaluar este punto la funcion es indeterminada
+pa1=taylor(g,-5,4)
+curve(f, col= "red", from = -10, to= 10)
+curve(p[1]*x^(4)+p[2]*x^(3)+p[3]*x^(2)+p[4]*x+p[5],add=TRUE, col="blue", from = -100, to= 100)
+curve(g, col= "green", from = -10, to= 10)
+curve(pa[1]*x^(4)+pa[2]*x^(3)+pa[3]*x^(2)+pa[4]*x+pa[5],add=TRUE, col="red", from = -100, to= 100 )
+curve(pa1[1]*x^(4)+pa1[2]*x^(3)+pa1[3]*x^(2)+pa1[4]*x+pa1[5],add=TRUE, col="red", from = -100, to= 100 )
+
+cat(p[1],"x^(4)+",p[2],"*x^(3)+",p[3],"*x^(2)+",p[4],"x+",p[5],"/n")
+#polinomio para la parte positiva
+cat(pa[1],"x^(4)+",pa[2],"*x^(3)+",pa[3],"*x^(2)+",pa[4],"x+",pa[5],"/n")
+#polinomio para la parte negativa
+cat(pa1[1],"x^(4)+",pa1[2],"*x^(3)+",pa1[3],"*x^(2)+",pa1[4],"x+",pa1[5],"/n")
+
+#Debido a que el polinomio es de grado 4 da una aproximacion acertada hasta cierto
+#punto, ademas hay que tener en cuenta el punto en el que va a estar centrado el polinomio
+```
+
+4) Construya un polinomio de grado tres que pase por:(0,10),(1,15),(2,5) y que la tangente sea igual a 1 en x0.
+```{r}
+x = c(0,1,2)
+y = c(10,15,5)
+newtonInterpolacion = function(x, y, a) {
+  n = length(x)
+  A = matrix(rep(NA, times = n^2), nrow = n, ncol = n)
+  
+  A[,1] = y
+  A[1,2]=1
+  for (k in 2:n) {
+  #print(A)
+    A[k:n, k] = (A[k:n, k-1] - A[(k-1):(n-1), k-1] ) / (x[k:n] - x[1:(n-k+1)])
+  }
+  f001 = (A[1,2]-A[2,2])/(x[1]-x[2])
+  f0012 = (f001-A[3,3])/(x[1]-x[3])
+
+  interpolacionFN <- function(x) A[1,1]+A[1,2]*x+f001*x^2+f0012*x^2*(x-1)
+  rPrima = deriv(10+x+4*x^2+(-23/4)*x^2*(x-1),"x")
+  print("P(x)=10+x+4*x^2+(-23/4)*x^2*(x-1)")
+  return(interpolacionFN)
+}
+resultado <- newtonInterpolacion(x,y,1)
+print("comprobando los resultados:")
+cat("f(0) = ", resultado(0))
+cat("f(1) = ", resultado(1))
+cat("f(2) = ", resultado(2))
+r <-expression(10+z+4*z^2+(-23/4)*z^2*(z-1))
+rPrima <-D(r,"z")
+cat("f'(0) = ", 1 + 4 * (2 * 0) + ((-23/4) * (2 * 0) * (0 - 1) + (-23/4) * 0^2))
+```
