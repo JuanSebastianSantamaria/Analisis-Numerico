@@ -1,0 +1,25 @@
+Sean x1, . . ., xn algunos números diferentes por pares y sean y1, . . ., yn algunos números.
+Entonces existe un único polinomio P de grado ≤ n − 1 tal que:
+𝑃(𝑥𝑗) = 𝑦𝑗 𝑝𝑎𝑟𝑎 𝑐𝑎𝑑𝑎 𝑗 𝑒𝑛 {1, . . . , 𝑛}.
+Demostración:
+Denotemos por c0, . . ., cn−1 a los coeficientes del polinomio:
+𝑃(𝑥) = 𝑐0 + 𝑐1𝑥 + 𝑐2𝑥0
+2 + . . . + 𝑐𝑛 − 1𝑥 𝑛 − 1 .
+Sustituyendo x = x1, luego x = x2, etc., hasta x = xn, obtenemos el siguiente sistema de ecuaciones
+lineales para las incógnitas
+𝑐0 + 𝑥1𝑐1 + 𝑥 2 1 𝑐2 + . . . + 𝑥 𝑛 − 1 1 𝑐𝑛 − 1 = 𝑦1
+𝑐0 + 𝑥𝑛𝑐1 + 𝑥 2 𝑛 𝑐2 + . . . + 𝑥 𝑛 − 1 𝑛 𝑐𝑛 − 1 = 𝑦𝑛.
+La matriz de este sistema es la matriz de Vandermonde asociada a los puntos x1, . . ., xn, y el
+sistema se escribe brevemente en la forma
+𝑉 (𝑥1, . . . , 𝑥𝑛)𝑐 = 𝑦,
+donde c = ck−1 n k=1 es el vector de los coeficientes incognitos.
+El determinante de este sistema es el determinante de Vandermonde y se calcula como el
+producto de todas las diferencias xj − xi con i < j:
+𝑑𝑒𝑡 𝑉(𝑥1, . . . , 𝑥𝑛) = ∏ (xk − xj).
+j,k∈{1,...,n} j<k
+Como los puntos x1, . . ., xn son diferentes por pares, todas estas diferencias xk − xj son distintas
+de cero, y el determinante es distinto de cero. Por lo tanto, el sistema de ecuaciones lineales tiene
+una solución única, esto es, existe un único polinomio que cumple con dichas propiedades.
+Tomado de:
+http://esfm.egormaximenko.com/numerical_methods/polynomial_interpolation_theorem_with_
+Vandermonde_es.pdf
